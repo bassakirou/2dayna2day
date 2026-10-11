@@ -45,9 +45,11 @@ Ajouter les secrets suivants à l'environnement production :
 
 Ne transmettre aucun de ces secrets dans le chat. Les deux URLs WordPress sont publiques et définies explicitement dans le job de build ; aucun secret cPanel ou SSH n'est transmis à npm ou inclus dans dist.
 
-## Premier envoi du code
+## Dépôt local et prochaines mises à jour
 
-Cloner le dépôt GitHub dans un autre dossier pour conserver son README et son historique. Copier dans ce clone `frontend` (sans node_modules, dist, out, .next*, .env*.local, etc.), `.github` et le `.gitignore` racine préparé. Vérifier `git status` et `git diff --cached` avant le commit. Envoyer ces fichiers sur main depuis votre éditeur ou terminal. Ne pas remplacer l'historique distant avec un push forcé.
+Le premier envoi est effectué. Le dossier de travail `C:/Users/Jean Marc bassahak/Documents/trae_projects/2dayna2day` est maintenant un dépôt Git sur main, relié à origin/main. L'historique distant et son README ont été conservés. Le dossier `.deployment-staging` était une copie de préparation et est ignoré ; travailler depuis le dossier habituel.
+
+Pour une mise à jour : vérifier `git status`, sélectionner les changements avec `git add frontend .github`, vérifier `git diff --cached`, puis `git commit -m "Description de la modification"` et `git push`. Les dossiers backend, exports et dépendances restent ignorés. Le push construit seulement ; publier ensuite explicitement depuis Actions après réussite.
 
 Le workflow doit être placé à la racine du dépôt, pas dans frontend/.github. Il attend frontend/package.json et frontend/package-lock.json.
 
