@@ -3,8 +3,14 @@ DirectoryIndex index.html
 RewriteEngine On
 
 # Static order pages use client-side authenticated queries.
-RewriteRule ^(fr|en)/account/orders/([^/]+)/?$ /$1/account/orders/?id=$2 [R=302,L,QSA,NE]
-RewriteRule ^(fr|en)/account/commandes/([^/]+)/?$ /$1/account/orders/?order=$2 [R=302,L,QSA,NE]
+RewriteCond %{IS_SUBREQ} =false
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(fr|en)/account/orders/([1-9][0-9]*)/?$ /$1/account/orders/?id=$2 [R=302,L,QSA,NE]
+RewriteCond %{IS_SUBREQ} =false
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(fr|en)/account/commandes/([^/.]+)/?$ /$1/account/orders/?order=$2 [R=302,L,QSA,NE]
 
 # Newly published CMS pages stay accessible without rebuilding the export.
 RewriteCond %{REQUEST_FILENAME} !-f

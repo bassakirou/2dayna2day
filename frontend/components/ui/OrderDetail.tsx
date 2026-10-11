@@ -15,9 +15,13 @@ export default function OrderDetail() {
   const { token, orders, loading, error, retry } = useAccountOrders();
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState("");
+  // Older hosting rewrites could prepend id=index.txt during index lookup.
+  // Accept one unambiguous WooCommerce ID, still restricted to this user's orders.
+  const ids = [...new Set(params.getAll("id").filter((id) => /^[1-9]\d*$/.test(id)))];
+  const orderId = ids.length === 1 ? ids[0] : null;
   const order = orders.find((o) =>
-    params.get("id")
-      ? o.id === params.get("id")
+    params.has("id")
+      ? orderId !== null && o.id === orderId
       : o.orderNumber === params.get("order"),
   );
   if (loading) return <AccountSkeleton />;

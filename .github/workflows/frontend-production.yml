@@ -45,6 +45,8 @@ jobs:
         with:
           name: frontend-production-${{ github.sha }}
           path: frontend/dist/
+          # Apache routing configuration is part of the public static export.
+          include-hidden-files: true
           retention-days: 14
           if-no-files-found: error
 

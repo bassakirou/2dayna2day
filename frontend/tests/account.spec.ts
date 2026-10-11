@@ -309,6 +309,24 @@ test("avis : filtres paginés et détail avec réponses du composant partagé", 
     page.getByRole("heading", { name: "Détail de mon avis" }),
   ).toBeVisible();
 });
+for (const query of ["id=101", "id=index.txt&id=101", "id=101&id=index.txt"]) {
+  test(`suivi export statique : ${query}`, async ({ page }) => {
+    await setup(page);
+    await page.goto(`/fr/account/orders/?${query}`);
+    await expect(page.getByRole("heading", { name: "Suivi détaillé" })).toBeVisible();
+    await expect(page.getByText("Commande introuvable.")).toHaveCount(0);
+  });
+}
+
+for (const query of ["id=index.txt", "id=101&id=224", "id=224"]) {
+  test(`suivi export statique refuse un identifiant absent ou ambigu : ${query}`, async ({ page }) => {
+    await setup(page);
+    await page.goto(`/fr/account/orders/?${query}`);
+    await expect(page.getByText("Commande introuvable.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Suivi détaillé" })).toHaveCount(0);
+  });
+}
+
 test("récompenses : badges et avantages réels du backend", async ({ page }) => {
   await setup(page);
   await page.goto("/fr/account/recompenses/");
