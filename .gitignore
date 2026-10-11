@@ -1,0 +1,7 @@
+# Ce dépôt publie uniquement le frontend et son workflow.
+/*
+!/frontend/
+!/.github/
+!/.gitignore
+!/.gitattributes
+!/README.md

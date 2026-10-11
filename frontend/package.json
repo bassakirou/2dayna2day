@@ -1,0 +1,45 @@
+{
+  "name": "2dayna2day",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3045",
+    "clean": "node -e \"const fs=require('fs');for(const p of ['.next','.next-dev','dist','out']){fs.rmSync(p,{recursive:true,force:true});}\"",
+    "dev:clean": "npm run clean && npm run dev",
+    "build": "node scripts/build.cjs",
+    "start": "npx --yes serve dist -l 3045",
+    "lint": "eslint app components context lib",
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "build:production": "node scripts/build.cjs",
+    "build:local": "node scripts/build.cjs --local",
+    "config:production": "node scripts/build.cjs --check",
+    "start:local": "npx --yes serve dist-local -l 3045"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.60.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "lucide-react": "^0.460.0",
+    "next": "^15.1.6",
+    "next-intl": "^4.13.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.6.0",
+    "tailwind-merge": "^2.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8",
+    "eslint-config-next": "^15.1.6",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

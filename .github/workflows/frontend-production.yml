@@ -1,0 +1,82 @@
+name: Frontend production o2switch
+
+on:
+  push:
+    branches: [main]
+    paths: ['frontend/**', '.github/workflows/frontend-production.yml']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Publier le frontend en production
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-production-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_WP_ORIGIN: https://admin2dayna2day.goldenbackapparel.com
+      NEXT_PUBLIC_WP_API_URL: https://admin2dayna2day.goldenbackapparel.com/wp-json/wp/v2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run config:production && npm run lint && npm run typecheck && npm run build:production
+        working-directory: frontend
+      - run: test -s frontend/dist/index.html && test -s frontend/dist/fr/index.html && test -d frontend/dist/_next/static
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-production-${{ github.sha }}
+          path: frontend/dist/
+          retention-days: 14
+          if-no-files-found: error
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://2dayna2day.goldenbackapparel.com
+    env:
+      CPANEL_SERVER: ${{ secrets.CPANEL_SERVER }}
+      CPANEL_USERNAME: ${{ secrets.CPANEL_USERNAME }}
+      CPANEL_API_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-production-${{ github.sha }}
+          path: frontend/dist
+      - name: Autoriser temporairement le runner SSH
+        run: python3 frontend/scripts/o2switch-whitelist.py add
+      - name: Transférer et vérifier le site
+        run: bash frontend/scripts/deploy-o2switch.sh
+      - name: Retirer uniquement l'exception temporaire et la clé
+        if: always()
+        run: |
+          python3 frontend/scripts/o2switch-whitelist.py cleanup
+          rm -f "$RUNNER_TEMP/2day-deploy-key" "$RUNNER_TEMP/2day-known-hosts"

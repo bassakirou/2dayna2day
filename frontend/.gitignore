@@ -1,0 +1,16 @@
+node_modules/
+.next*/
+out/
+dist/
+dist-local/
+.env
+.env.local
+.env.*.local
+*.tsbuildinfo
+test-results/
+.trae/
+playwright-report/
+__pycache__/
+*.pem
+*.key
+tests/screenshots/
